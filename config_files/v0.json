@@ -1,0 +1,5 @@
+{
+  "path_sonar_annotator_1" : "resources/FrameNet_annotations_on_SoNaR/scripts/bins/A1.p",
+  "path_sonar_annotator_2" : "resources/FrameNet_annotations_on_SoNaR/scripts/bins/A2.p",
+  "wiktionary_translations_path" : "resources/wiktionary/output/translations.tsv"
+}
