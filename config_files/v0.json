@@ -1,5 +1,18 @@
 {
+  "fn_version" : "1.7",
+  "namespace" : "http://premon.fbk.eu/resource/",
+  "rbn_filter" : "True",
+  "cache_folder" : "tmp",
+  "short_namespace" : "pm",
   "path_sonar_annotator_1" : "resources/FrameNet_annotations_on_SoNaR/scripts/bins/A1.p",
   "path_sonar_annotator_2" : "resources/FrameNet_annotations_on_SoNaR/scripts/bins/A2.p",
-  "wiktionary_translations_path" : "resources/wiktionary/output/translations.tsv"
+  "wiktionary_translations_path" : "resources/wiktionary/output/translations.tsv",
+  "mapping_rbn_featureset2fn_frames" : "resources/RBN_Reader/mapping_to_fn/mapping.json",
+  "path_rbn_objs" : "resources/RBN_Reader/output/rbn.p",
+  "graph_options" : {
+    "frame_en2lu_en" : true,
+    "lu_id2lemmapos_nl" : true,
+    "rbn_les2lemma_pos_nl" : true,
+    "rbn_les2feature_set2frame" : false
+}
 }

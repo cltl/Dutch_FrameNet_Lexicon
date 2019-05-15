@@ -2,25 +2,38 @@
 Combine information from Dutch resources that allow us to link ot English FrameNet
 
 Usage:
-  combine_resources.py --config_path=<config_path> --output_folder=<output_folder> --verbose=<verbose>
+  combine_resources.py --config_path=<config_path> --output_folder=<output_folder> --use_cache=<use_cache> --verbose=<verbose>
 
 Options:
+    --config_path=<config_path>
+    --output_folder=<output_folder>
     --verbose=<verbose> 0 --> no stdout 1 --> general stdout 2 --> detailed stdout
+    --use_cache=<use_cache>
 
 Example:
-    python combine_resources.py --config_path="config_files/v0.json" --output_folder="output" --verbose=1
+    python combine_resources.py --config_path="config_files/v0.json" --output_folder="output" --use_cache="True" --verbose=1
 """
 import json
 import os
+import sys
 import pickle
 import pathlib
 from docopt import docopt
+from datetime import datetime
+
 
 import dfn_classes
+import graph_utils
 
 from sonar_utils import load_sonar_annotations
 from wiktionary_utils import load_wiktionary
 from resources.FN_Reader.stats_utils import load_framenet
+import rbn_utils
+from resources.RBN_Reader import rbn_classes
+# make sure pickled objects can be read into memory
+sys.modules['rbn_classes'] = rbn_classes
+
+import networkx as nx
 
 # load arguments
 arguments = docopt(__doc__)
@@ -35,55 +48,117 @@ configuration = json.load(open(config_path))
 
 out_dir = pathlib.Path(arguments['--output_folder'])
 if not out_dir.exists():
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True)
+
+cache_dir = pathlib.Path(configuration['cache_folder'])
+if not cache_dir.exists():
+    cache_dir.mkdir(parents=True)
+cache_path_translations = cache_dir / 'translations.p'
 
 verbose=int(arguments['--verbose'])
+rbn_filter = configuration['rbn_filter'] == 'True'
+use_cache = arguments['--use_cache'] == 'True'
 
+if verbose >= 1:
+    print('START TIME', datetime.now())
+
+# load framenet
+fn = load_framenet(version=configuration['fn_version'])
 
 # load sonar annotations
-frame2lexeme_objs_from_sonar, sonar_stats = load_sonar_annotations(configuration, verbose=verbose)
+frame2lexeme_objs_from_sonar, \
+frame2lemma_objs_from_sonar, \
+sonar_stats = load_sonar_annotations(configuration, verbose=verbose)
 
-nl2en, en2nl = load_wiktionary(configuration, verbose=verbose)
 
+if all([use_cache,
+        not cache_path_translations.exists()]):
+    if verbose >= 1:
+        print('extracting wikitionary translations from file (no cache used')
+    nl2en, en2nl = load_wiktionary(configuration, verbose=verbose)
+    with open(str(cache_path_translations), 'wb') as outfile:
+        pickle.dump((nl2en, en2nl), outfile)
+else:
+    if verbose >= 1:
+        print('loading wiktionary translations from cache')
+    with open(str(cache_path_translations), 'rb') as infile:
+        nl2en, en2nl = pickle.load(infile)
+
+# load rbn information
+mapping = json.load(open(configuration['mapping_rbn_featureset2fn_frames']))
+rbn_objs = pickle.load(open(configuration['path_rbn_objs'], 'rb'))
+frame2rbn_objs, \
+frame2feature_set_values= rbn_utils.load_frame2rbn_objs_via_subsumes_relation(fn,
+                                                                            mapping,
+                                                                            rbn_objs)
 # loop over framenet
-fn = load_framenet()
 frame_label2frame_obj = dict()
-
 
 for frame in fn.frames():
 
     frame_label = frame.name
+    frame_def = frame.definition
 
-    frame_obj = dfn_classes.EnFrame(frame_label=frame_label)
+    frame_obj = dfn_classes.EnFrame(frame_label=frame_label,
+                                    definition=frame_def,
+                                    namespace=configuration['namespace'],
+                                    fn_version=configuration['fn_version'],
+                                    short_namespace=configuration['short_namespace'])
+    frame_obj.add_lu_objs(frame, frame_obj.get_short_rdf_uri())
 
-    # add information from sonar annotations
+    # add lexeme information from sonar annotations
     if frame_label in frame2lexeme_objs_from_sonar:
         lexeme_objs = frame2lexeme_objs_from_sonar[frame_label]
         frame_obj.lexeme_objs = lexeme_objs
 
-    for lemma_pos, lu_info in frame.lexUnit.items():
-        lu_id = lu_info.ID
+    # add lemme information from sonar annotations
+    if frame_label in frame2lemma_objs_from_sonar:
+        lemma_objs = frame2lemma_objs_from_sonar[frame_label]
+        frame_obj.lemma_objs.extend(lemma_objs)
 
-        for lemma_pos, lu in frame.lexUnit.items():
-            lexeme_parts = [lexeme_part['name']
-                            for lexeme_part in lu.lexemes]
-            lexeme = ' '.join(lexeme_parts)
+    # add lemma translations
+    for lu_id, lu_obj in frame_obj.lu_id2lu_obj.items():
+        translations = en2nl[lu_obj.lexeme]
+        for translation in translations:
+            lemma_obj = dfn_classes.Lemma(lemma=translation,
+                                          frame_label=frame_obj.get_short_rdf_uri(),
+                                          provenance='wiktionary',
+                                          language='Dutch',
+                                          pos=lu_obj.pos,
+                                          lu_id=lu_id)
+            frame_obj.lemma_objs.append(lemma_obj)
 
-            translations = en2nl[lexeme]
-            for translation in translations:
-                lemma_obj = dfn_classes.Lemma(lemma=translation,
-                                              frame_label=frame_label,
-                                              provenance='wiktionary',
-                                              lu_id=lu_id)
-                frame_obj.lemma_objs.append(lemma_obj)
+    # add information from RBN
+    if frame_label in frame2feature_set_values:
+        frame_obj.rbn_feature_set_values.extend(frame2feature_set_values[frame_label])
+
+    # perform filtering based on RBN information
+    if rbn_filter:
+        frame_obj.lemma_objs = dfn_classes.filter_based_on_rbn(frame_obj.lemma_objs,
+                                                               rbn_objs,
+                                                               verbose=verbose)
+
 
     frame_label2frame_obj[frame_label] = frame_obj
 
+# load graph
+g = graph_utils.load_graph(frame_label2frame_obj,
+                           rbn_objs,
+                           configuration['graph_options'])
 
 # save to file
 output_path = out_dir / 'combined.p'
 with open(output_path, 'wb') as outfile:
     pickle.dump(frame_label2frame_obj, outfile)
 
+graph_path = out_dir / 'graph.p'
+nx.write_gpickle(g, graph_path)
+
+# save dot graphs
+#if verbose:
+#    print('we generate dot graphs for the following parts of speech: a v')
+
 if verbose:
     print(f'saved output to {output_path}')
+    print(f'saved graph to {graph_path}')
+    print(datetime.now())

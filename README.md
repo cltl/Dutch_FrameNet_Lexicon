@@ -31,6 +31,17 @@ Perform the following call for more information about usage
 python combine_resources.py -h
 ```
 
+## TODO
+* mapping
+    * domein informatie
+    * using framenet relations
+* load richer graph 
+    * [discuss how we want to approach this] integreer synoniem informatie (statistics about how much we would have to annotate)
+* vizualize output using DOT language
+    * preload all vizualizations + put on kyoto + contact Hennie and Isa
+* load additional resources
+    * PMB
+    
 ## Authors
 * **Marten Postma** (m.c.postma@vu.nl)
 

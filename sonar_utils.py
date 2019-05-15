@@ -1,7 +1,7 @@
 import sys
 import os
 import pickle
-from dfn_classes import Lexeme
+from dfn_classes import Lexeme, Lemma
 from collections import defaultdict
 from resources.FrameNet_annotations_on_SoNaR.scripts import sonar_classes
 # make sure pickled objects can read into memory
@@ -36,7 +36,8 @@ def load_sonar_annotations(configuration, verbose=0):
     }
 
     provenance_label = 'sonar_fn_annotations'
-    frame_label2lexeme_obj = defaultdict(list)
+    frame_label2lexeme_objs = defaultdict(list)
+    frame_label2lemma_objs = defaultdict(list)
 
     for key in shared_keys:
 
@@ -53,16 +54,34 @@ def load_sonar_annotations(configuration, verbose=0):
                 text_anno_1 = info_annotator_1.predicate['text']
                 text_anno_2 = info_annotator_2.predicate['text']
 
-                if text_anno_1 == text_anno_2:
-                    frame_label = list(info_annotator_1.frame)[0]
-                    predicate_label = text_anno_1
+                lemma_anno_1 = info_annotator_1.predicate['lemma']
+                lemma_anno_2 = info_annotator_2.predicate['lemma']
 
+                pos = info_annotator_2.predicate['fn_pos']
+
+                if all([text_anno_1 == text_anno_2,
+                        lemma_anno_1 == lemma_anno_2]):
+                    frame_label = list(info_annotator_1.frame)[0]
+
+                    predicate_label = text_anno_1
+                    predicate_lemma = lemma_anno_1
 
                     lexeme_obj = Lexeme(lexeme=predicate_label,
                                         frame_label=frame_label,
                                         provenance=provenance_label)
 
-                    frame_label2lexeme_obj[frame_label].append(lexeme_obj)
+                    frame_label2lexeme_objs[frame_label].append(lexeme_obj)
+
+                    lemma_obj = Lemma(lemma=predicate_lemma,
+                                      pos=pos,
+                                      frame_label=frame_label,
+                                      provenance=provenance_label,
+                                      language='Dutch',
+                                      lu_id=None)
+
+                    frame_label2lemma_objs[frame_label].append(lemma_obj)
+
+
                     merging_stats['# of same frame annotations'] += 1
 
                 else:
@@ -75,7 +94,9 @@ def load_sonar_annotations(configuration, verbose=0):
 
     if verbose:
         print()
-        print(f'num of frames with at least one annotation: {len(frame_label2lexeme_obj)}')
+        print(f'num of frames with at least one annotation: {len(frame_label2lexeme_objs)}')
         print(merging_stats)
 
-    return (frame_label2lexeme_obj, merging_stats)
+    return (frame_label2lexeme_objs,
+            frame_label2lemma_objs,
+            merging_stats)
