@@ -29,9 +29,9 @@ from sonar_utils import load_sonar_annotations
 from wiktionary_utils import load_wiktionary
 from resources.FN_Reader.stats_utils import load_framenet
 import rbn_utils
-from resources.RBN_Reader import rbn_classes
+from resources.ODWN_Reader import odwn_classes
 # make sure pickled objects can be read into memory
-sys.modules['rbn_classes'] = rbn_classes
+sys.modules['odwn_classes'] = odwn_classes
 
 import networkx as nx
 
@@ -86,11 +86,12 @@ else:
 
 # load rbn information
 mapping = json.load(open(configuration['mapping_rbn_featureset2fn_frames']))
-rbn_objs = pickle.load(open(configuration['path_rbn_objs'], 'rb'))
+rbn_senseid2le_obj = pickle.load(open(configuration['path_rbn_objs'], 'rb'))
+rbn_objs = rbn_senseid2le_obj.values()
 frame2rbn_objs, \
 frame2feature_set_values= rbn_utils.load_frame2rbn_objs_via_subsumes_relation(fn,
-                                                                            mapping,
-                                                                            rbn_objs)
+                                                                              mapping,
+                                                                              rbn_objs)
 # loop over framenet
 frame_label2frame_obj = dict()
 
@@ -154,9 +155,6 @@ with open(output_path, 'wb') as outfile:
 graph_path = out_dir / 'graph.p'
 nx.write_gpickle(g, graph_path)
 
-# save dot graphs
-#if verbose:
-#    print('we generate dot graphs for the following parts of speech: a v')
 
 if verbose:
     print(f'saved output to {output_path}')

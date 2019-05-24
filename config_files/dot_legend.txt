@@ -1,0 +1,6 @@
+subgraph cluster_key {
+    label="Legend";
+    manual_edge_label [color="green" label="manual"];
+    automatic_edge_label [color="orange" label="automatic"];
+    manual_edge_label -> automatic_edge_label [style=invis];
+}
