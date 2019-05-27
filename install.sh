@@ -22,6 +22,7 @@ cd ..
 git clone https://github.com/cltl/FN_Reader
 cd FN_Reader
 pip install -r requirements.txt
+bash install.sh
 cd ..
 
 
