@@ -15,17 +15,17 @@ def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options):
 
         frame_short_rdf_uri = frame_obj.get_short_rdf_uri()
         assert frame_short_rdf_uri
-        g.add_node(frame_short_rdf_uri, attr=frame_obj.hover_info)  # node is added
+        g.add_node(frame_short_rdf_uri, attr=frame_obj.get_hover_info())  # node is added
 
         if options['frame_en2lu_en']:
             for lu_id, lu_obj in frame_obj.lu_id2lu_obj.items():
-                g.add_node(lu_id, attr=lu_obj.hover_info)  # node is added
+                g.add_node(lu_id, attr=lu_obj.get_hover_info())  # node is added
                 g.add_edge(frame_short_rdf_uri, lu_id)
 
         if options['lu_id2lemmapos_nl']:
             for lemma_obj in frame_obj.lemma_objs:
                 lemmapos_nl = lemma_obj.short_rdf_uri
-                g.add_node(lemmapos_nl, attr=lemma_obj.hover_info)  # node is added
+                g.add_node(lemmapos_nl, attr=lemma_obj.get_hover_info())  # node is added
                 lu_id = lemma_obj.lu_id
 
                 if lemma_obj.provenance == 'wiktionary':
@@ -42,7 +42,7 @@ def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options):
     if options['rbn_les2lemma_pos_nl']:
         lemmapos2le_ids = defaultdict(set)
         for rbn_obj in rbn_objs:
-            g.add_node(rbn_obj.short_rdf_uri, attr=rbn_obj.hover_info)  # node is added
+            g.add_node(rbn_obj.short_rdf_uri, attr=rbn_obj.get_hover_info())  # node is added
             lemmapos_nl = f'(Dutch){rbn_obj.lemma}.{rbn_obj.fn_pos}'
             lemmapos2le_ids[lemmapos_nl].add(rbn_obj.short_rdf_uri)
 
@@ -53,7 +53,7 @@ def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options):
     if options['synset2rbn']:
         for synset_id, synset_obj in synset_id2synset_obj.items():
             synset_id = synset_obj.synset_id
-            g.add_node(synset_id, attr=synset_obj.hover_info) # node is added
+            g.add_node(synset_id, attr=synset_obj.get_hover_info()) # node is added
 
             for rbn_obj in synset_obj.synonyms:
                 color = 'orange'
@@ -200,6 +200,13 @@ def subgraph_in_dot(g, paths, output_path=None):
                 edge_attr = g.get_edge_data(node, synset_id)
                 edges[(node, synset_id)] = edge_attr['attr'] # edge added
                 nodes[synset_id] = dict() # node added
+
+                synset_info = g.node[synset_id]
+                for synonym in synset_info['attr']['synonyms']:
+                    if synonym != node:
+                        edges[(synonym, synset_id)] = dict() # edge added
+                        nodes[synonym] = dict() # node added
+
 
     # add nodes to graph
     for node in nodes:

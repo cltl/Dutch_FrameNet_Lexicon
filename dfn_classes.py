@@ -52,10 +52,11 @@ class EnFrame:
         self.lexeme_objs = []
         self.rbn_feature_set_values = []
 
-        self.hover_info = {
-            'frame_label' : self.frame_label,
-            'definition' : self.definition,
-            'rbn_feature_set_values' : self.rbn_feature_set_values
+    def get_hover_info(self):
+        return {
+            'frame_label': self.frame_label,
+            'definition': self.definition,
+            'rbn_feature_set_values': self.rbn_feature_set_values
         }
 
     def get_full_rdf_uri(self):
@@ -107,7 +108,9 @@ class LU:
         self.lexeme = self.get_lexeme(lu_info)
         self.frame_short_rdf_uri = frame_short_rdf_uri
 
-        self.hover_info = {
+
+    def get_hover_info(self):
+        return {
             'pos' : self.pos,
             'lemma' : self.lexeme,
             'frame_short_rdf_uri' : self.frame_short_rdf_uri
@@ -146,12 +149,13 @@ class Lemma:
 
         self.short_rdf_uri = self.get_short_uri()
 
-        self.hover_info = {
+
+    def get_hover_info(self):
+        return {
             'lemma': self.lemma,
             'language' : self.language,
             'pos' : self.pos,
         }
-
 
     def get_short_uri(self):
         if self.pos is not None:

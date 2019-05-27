@@ -25,6 +25,10 @@ bash install.sh
 
 ## Contents
 
+Most important classes files :
+* dfn_classes.py
+* resources/ODWN_Reader/odwn_classes.py
+
 ## How to use
 Perform the following call for more information about usage
 ```
@@ -32,15 +36,12 @@ python combine_resources.py -h
 ```
 
 ## TODO
-* make hover_info a method in all classes instead of attribute
 * add legend
 * mapping
     * domein informatie
     * using framenet relations
 * load richer graph 
     * [discuss how we want to approach this] integreer synoniem informatie (statistics about how much we would have to annotate)
-* vizualize output using DOT language
-    * preload all vizualizations + put on kyoto + contact Hennie and Isa
 * load additional resources
     * PMB
     
