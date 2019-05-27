@@ -92,6 +92,9 @@ frame2rbn_objs, \
 frame2feature_set_values= rbn_utils.load_frame2rbn_objs_via_subsumes_relation(fn,
                                                                               mapping,
                                                                               rbn_objs)
+
+synset_id2synset_obj = pickle.load(open(configuration['path_synset_objs'], 'rb'))
+
 # loop over framenet
 frame_label2frame_obj = dict()
 
@@ -144,6 +147,7 @@ for frame in fn.frames():
 
 # load graph
 g = graph_utils.load_graph(frame_label2frame_obj,
+                           synset_id2synset_obj,
                            rbn_objs,
                            configuration['graph_options'])
 

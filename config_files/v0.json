@@ -9,11 +9,12 @@
   "wiktionary_translations_path" : "resources/wiktionary/output/translations.tsv",
   "mapping_rbn_featureset2fn_frames" : "resources/ODWN_Reader/mapping_to_fn/mapping.json",
   "path_rbn_objs" : "resources/ODWN_Reader/output/orbn.p",
-  "path_synset_objs" : "resources/",
+  "path_synset_objs" : "resources/ODWN_Reader/output/odwn.p",
   "graph_options" : {
     "frame_en2lu_en" : true,
     "lu_id2lemmapos_nl" : true,
     "rbn_les2lemma_pos_nl" : true,
+    "synset2rbn" : true,
     "rbn_les2feature_set2frame" : false
 },
   "dot_legend_path" : "config_files/dot_legend.txt"

@@ -32,6 +32,8 @@ python combine_resources.py -h
 ```
 
 ## TODO
+* make hover_info a method in all classes instead of attribute
+* add legend
 * mapping
     * domein informatie
     * using framenet relations
