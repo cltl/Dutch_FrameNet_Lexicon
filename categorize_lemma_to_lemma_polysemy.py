@@ -28,10 +28,10 @@ from datetime import datetime
 import networkx as nx
 import graph_utils
 
-from resources.RBN_Reader import rbn_classes
+from resources.ODWN_Reader import odwn_classes
 # make sure pickled objects can be read into memory
-sys.modules['rbn_classes'] = rbn_classes
-from resources.RBN_Reader import utils
+sys.modules['odwn_classes'] = odwn_classes
+from resources.ODWN_Reader import utils
 
 
 def polysemy_profiles_to_category(polysemy_nl, polysemy_en):
