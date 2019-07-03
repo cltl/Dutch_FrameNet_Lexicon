@@ -21,7 +21,6 @@ import pathlib
 from docopt import docopt
 from datetime import datetime
 
-
 import dfn_classes
 import graph_utils
 

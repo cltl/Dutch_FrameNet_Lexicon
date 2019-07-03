@@ -1,5 +1,46 @@
 from collections import Counter
 
+
+def fn_pos2wn_pos(fn_pos):
+    """
+    FrameNet part of speech to WordNet part of speech
+
+    :param str fn_pos: FrameNet part of speech
+
+    :rtype: str
+    :return: WordNet part of speech or None if not mapped
+    """
+
+    if fn_pos == 'A':
+        wn_pos = 'a'
+    elif fn_pos == 'V':
+        wn_pos = 'v'
+    elif fn_pos == 'ADV':
+        wn_pos = 'r'
+    elif fn_pos == 'N':
+        wn_pos = 'n'
+    elif fn_pos in {'ART',
+                    'C',
+                    'IDIO',
+                    'INTJ',
+                    'NUM',
+                    'PREP',
+                    'PRON',
+                    'SCON'}:
+        wn_pos = 'UNMAPPABLE'
+    else:
+        raise AssertionError(f'{fn_pos} not part of FN pos tagset')
+
+    return wn_pos
+
+
+assert fn_pos2wn_pos('V') == 'v'
+assert fn_pos2wn_pos('N') == 'n'
+assert fn_pos2wn_pos('A') == 'a'
+assert fn_pos2wn_pos('ART') == 'UNMAPPABLE'
+
+
+
 def filter_based_on_rbn(lemma_objs, rbn_objs, verbose=0):
     """
 
@@ -93,8 +134,12 @@ class EnFrame:
                                          lemma_obj.provenance == 'wiktionary'])
                                  ])
             info.append(f'{lu_id} ({lu_obj.lexeme}): {str(freq_dist)}')
+            rbn_senses = []
+            if hasattr(lu_obj, 'rbn2fn'):
+                rbn_senses.extend(lu_obj.rbn2fn)
+            if rbn_senses:
+                info.append(f'RBN senses: {rbn_senses}\n')
 
-        
         return '\n'.join(info)
 
 

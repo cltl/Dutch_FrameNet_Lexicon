@@ -11,7 +11,7 @@ Options:
     --verbose=<verbose> 0 --> no stdout 1 --> general stdout 2 --> detailed stdout
 
 Example:
-    python create_dot_vizualizations.py --graph_path="output/graph.p" --rbn_path="resources/ODWN_Reader/output/orbn.p" --output_folder="dot" --verbose="1"
+    python create_dot_vizualizations.py --graph_path="output/graph_v1.p" --rbn_path="resources/ODWN_Reader/output/orbn.p" --output_folder="dot" --verbose="1"
 """
 import sys
 import pickle
@@ -41,16 +41,16 @@ if not out_dir.exists():
 
 lemma_pos = {(rbn_obj.lemma, rbn_obj.simple_pos)
              for rbn_obj in rbn_objs
-             if rbn_obj.simple_pos in {'v'}}
+             if rbn_obj.simple_pos in {'n'}}
 if verbose:
-    print('parts of speech: v')
+    print('parts of speech: n')
     print(f'number of lemma and pos: {len(lemma_pos)}')
 
 verbose=0
 maximum_path_length=3
 for index, (lemma, pos) in enumerate(lemma_pos):
 
-    if lemma != 'zeilen':
+    if lemma != 'homoniem':
         continue
 
     if index % 100 == 0:

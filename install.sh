@@ -25,14 +25,22 @@ pip install -r requirements.txt
 bash install.sh
 cd ..
 
+git clone https://github.com/cltl/run_open-sesame
+cd run_open-sesame
+pip install -r requirements.txt
+bash install.sh
+cd ..
 
 git clone https://github.com/cltl/ODWN_Reader
 cd ODWN_Reader
 bash install.sh
 pip install -r requirements.txt
-python main.py --orbn_path="resources/orbn_1.0.xml" --odwn_path="resources/odwn_orbn_gwg-LMF_1.3.xml" --output_folder="output" --allowed_prefixes="r+c" --exclude_sub_NUMBER="True" --namespace="http://premon.fbk.eu/resource/" --short_namespace="pm"
+python main.py --orbn_path="resources/orbn_n-v-a.xml" --odwn_path="resources/odwn_orbn_gwg-LMF_1.3.xml" --output_folder="output" --allowed_prefixes="r+c" --exclude_sub_NUMBER="True" --namespace="http://premon.fbk.eu/resource/" --short_namespace="pm"
 python convert_mapping_to_json.py --path_to_excel="mapping_to_fn/Mapping.xlsx" --json_output_path="mapping_to_fn/mapping.json"
 cd ..
+
+pip install nltk
+python -c 'import nltk;nltk.download("wordnet")'
 
 
 

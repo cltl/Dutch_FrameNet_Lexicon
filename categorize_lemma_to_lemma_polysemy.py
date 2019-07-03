@@ -16,7 +16,6 @@ Example:
     python categorize_lemma_to_lemma_polysemy.py --config_path="config_files/v0.json" --input_folder="output" --output_folder="polysemy_profiles" --rbn_pos="verb" --fn_pos="V" --verbose=1
 """
 from collections import defaultdict
-from datetime import datetime
 import sys
 import pickle
 import os
