@@ -2,6 +2,7 @@
   "fn_version" : "1.7",
   "namespace" : "http://premon.fbk.eu/resource/",
   "rbn_filter" : "True",
+  "exclude_lemmas_with_space" : "True",
   "cache_folder" : "tmp",
   "short_namespace" : "pm",
   "path_sonar_annotator_1" : "resources/FrameNet_annotations_on_SoNaR/scripts/bins/A1.p",

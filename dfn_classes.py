@@ -40,6 +40,21 @@ assert fn_pos2wn_pos('A') == 'a'
 assert fn_pos2wn_pos('ART') == 'UNMAPPABLE'
 
 
+def filter_based_on_spaces_in_lemma(lemma_objs, verbose=0):
+    """
+    :param list lemma_objs: list of dfn_classes.Lemma objects
+    """
+    filtered_lemma_objs = []
+
+    for lemma_obj in lemma_objs:
+        if ' ' not in lemma_obj.lemma:
+            filtered_lemma_objs.append(lemma_obj)
+        else:
+            if verbose >= 2:
+                print(f'skipping {lemma_obj.lemma} because it contains spaces')
+
+    return filtered_lemma_objs
+
 
 def filter_based_on_rbn(lemma_objs, rbn_objs, verbose=0):
     """
@@ -71,6 +86,51 @@ def filter_based_on_rbn(lemma_objs, rbn_objs, verbose=0):
                     print(f'ignoring because not in RBN {lemma_obj.lemma}')
 
     return filtered_lemma_objs
+
+
+class FrameNet:
+    """
+
+    """
+    def __init__(self):
+        self.framelabel2frame_obj = {}
+
+
+        self.cur_dutch_lemma_pos_id = 0
+        self.dutch_lemma_pos2id = {}
+
+
+    def update_lemma_obj_with_lemmapos_id(self, lemma_obj):
+        """
+        provided that a Lemma object has:
+        -a lemma
+        -a FrameNet part of speech
+
+        this method updates the attribute lemma_pos_id with an identifier
+        :param Lemma lemma_obj:
+        """
+        assert lemma_obj.language == 'Dutch', f'language of {lemma_obj.get_short_uri()} should be Dutch (English lemma,pos combination should already have lemmma_pos_id)'
+        if all([lemma_obj.lemma is not None,
+                lemma_obj.pos is not None]):
+
+            key = (lemma_obj.lemma, lemma_obj.pos)
+
+            if key in self.dutch_lemma_pos2id:
+                lemma_obj.lemma_pos_id = self.dutch_lemma_pos2id[key]
+            else:
+                identifier = f'{lemma_obj.language}-{self.cur_dutch_lemma_pos_id}'
+                lemma_obj.lemma_pos_id = identifier
+                self.dutch_lemma_pos2id[(lemma_obj.lemma, lemma_obj.pos)] = lemma_obj.lemma_pos_id
+                self.cur_dutch_lemma_pos_id += 1
+
+    def validate_lemmapos_identifiers(self):
+        identifiers = []
+        for framelabel, frame_obj in self.framelabel2frame_obj.items():
+            for lemma_obj in frame_obj.lemma_objs:
+                if lemma_obj.lemma_pos_id is not None:
+                    identifiers.append(lemma_obj.lemma_pos_id)
+
+        assert len(set(identifiers)) == len(self.dutch_lemma_pos2id)
 
 
 class EnFrame:
@@ -152,6 +212,7 @@ class LU:
         self.pos = lu_info.POS
         self.lexeme = self.get_lexeme(lu_info)
         self.frame_short_rdf_uri = frame_short_rdf_uri
+        self.rbn_senses = []
 
 
     def get_hover_info(self):
@@ -171,6 +232,7 @@ class LU:
         info = [f'ID: {self.id_}',
                 f'POS: {self.pos}',
                 f'LEMMA: {self.lexeme}',
+                f'RBN senses: {self.rbn_senses}',
                 f'frame_short_rdf_uri: {self.frame_short_rdf_uri}']
         return '\n'.join(info)
 
@@ -191,6 +253,7 @@ class Lemma:
         self.language = language
         self.lu_id = lu_id
         self.pos = pos
+        self.lemma_pos_id = None # FrameNet provides an identifier for each lemma and pos combination
 
         self.short_rdf_uri = self.get_short_uri()
 

@@ -78,12 +78,12 @@ if not out_dir.exists():
 
 # load objects
 rbn_objs = pickle.load(open(configuration["path_rbn_objs"], 'rb'))
-frame_label2frame_obj = pickle.load(open(f"{arguments['--input_folder']}/combined.p", "rb"))
+fn_obj = pickle.load(open(f"{arguments['--input_folder']}/combined.p", "rb"))
 g = nx.read_gpickle(f"{arguments['--input_folder']}/graph.p")
 
 # load polysemy info
 lemma_pos2frame_objs = defaultdict(list)
-for frame_label, frame_obj in frame_label2frame_obj.items():
+for frame_label, frame_obj in fn_obj.frame_label2frame_obj.items():
     for lu_id, lu_obj in frame_obj.lu_id2lu_obj.items():
         lemma_pos2frame_objs[(lu_obj.lexeme,
                               lu_obj.pos)].append(frame_obj)

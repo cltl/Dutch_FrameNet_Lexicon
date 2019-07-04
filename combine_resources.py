@@ -56,6 +56,7 @@ cache_path_translations = cache_dir / 'translations.p'
 
 verbose=int(arguments['--verbose'])
 rbn_filter = configuration['rbn_filter'] == 'True'
+exclude_lemmas_with_spaces = configuration['exclude_lemmas_with_space'] == 'True'
 use_cache = arguments['--use_cache'] == 'True'
 
 if verbose >= 1:
@@ -95,7 +96,7 @@ frame2feature_set_values= rbn_utils.load_frame2rbn_objs_via_subsumes_relation(fn
 synset_id2synset_obj = pickle.load(open(configuration['path_synset_objs'], 'rb'))
 
 # loop over framenet
-frame_label2frame_obj = dict()
+fn_obj = dfn_classes.FrameNet()
 
 for frame in fn.frames():
 
@@ -141,11 +142,23 @@ for frame in fn.frames():
                                                                rbn_objs,
                                                                verbose=verbose)
 
+    # performing filtering based on whether there are spaces in the lemmas
+    if exclude_lemmas_with_spaces:
+        frame_obj.lemma_objs = dfn_classes.filter_based_on_spaces_in_lemma(lemma_objs,
+                                                                           verbose=verbose)
 
-    frame_label2frame_obj[frame_label] = frame_obj
+    # make sure all Dutch lemma_pos ids have an identifier
+    for lemma_obj in frame_obj.lemma_objs:
+        if lemma_obj.language == 'Dutch':
+            fn_obj.update_lemma_obj_with_lemmapos_id(lemma_obj)
+
+    fn_obj.framelabel2frame_obj[frame_label] = frame_obj
+
+# validate
+fn_obj.validate_lemmapos_identifiers()
 
 # load graph
-g = graph_utils.load_graph(frame_label2frame_obj,
+g = graph_utils.load_graph(fn_obj.framelabel2frame_obj,
                            synset_id2synset_obj,
                            rbn_objs,
                            configuration['graph_options'])
@@ -153,7 +166,7 @@ g = graph_utils.load_graph(frame_label2frame_obj,
 # save to file
 output_path = out_dir / 'combined.p'
 with open(output_path, 'wb') as outfile:
-    pickle.dump(frame_label2frame_obj, outfile)
+    pickle.dump(fn_obj, outfile)
 
 graph_path = out_dir / 'graph.p'
 nx.write_gpickle(g, graph_path)
