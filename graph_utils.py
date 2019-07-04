@@ -5,7 +5,7 @@ from graphviz import Source
 import nltk
 
 
-def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options):
+def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options, verbose=0):
     """
 
     """
@@ -27,7 +27,6 @@ def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options):
                 lemmapos_nl = lemma_obj.short_rdf_uri
                 g.add_node(lemmapos_nl, attr=lemma_obj.get_hover_info())  # node is added
                 lu_id = lemma_obj.lu_id
-
                 if lemma_obj.provenance == 'wiktionary':
                     g.add_edge(lemmapos_nl, lu_id)
                 if lemma_obj.provenance == 'sonar_fn_annotations':

@@ -50,9 +50,6 @@ verbose=0
 maximum_path_length=3
 for index, (lemma, pos) in enumerate(lemma_pos):
 
-    if lemma != 'homoniem':
-        continue
-
     if index % 100 == 0:
         print(index, datetime.now())
 
@@ -69,4 +66,3 @@ for index, (lemma, pos) in enumerate(lemma_pos):
         lemma_g = graph_utils.subgraph_in_dot(g,
                                               paths=all_paths,
                                               output_path=f'{str(out_dir)}/{lemma}-{pos}.gv')
-        break

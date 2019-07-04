@@ -100,6 +100,11 @@ class FrameNet:
         self.dutch_lemma_pos2id = {}
 
 
+    def __str__(self):
+        info = [f'num of frames: {len(self.framelabel2frame_obj)}']
+
+        return '\n'.join(info)
+
     def update_lemma_obj_with_lemmapos_id(self, lemma_obj):
         """
         provided that a Lemma object has:
