@@ -144,7 +144,7 @@ for frame in fn.frames():
 
     # performing filtering based on whether there are spaces in the lemmas
     if exclude_lemmas_with_spaces:
-        frame_obj.lemma_objs = dfn_classes.filter_based_on_spaces_in_lemma(lemma_objs,
+        frame_obj.lemma_objs = dfn_classes.filter_based_on_spaces_in_lemma(frame_obj.lemma_objs,
                                                                            verbose=verbose)
 
     # make sure all Dutch lemma_pos ids have an identifier
@@ -156,6 +156,9 @@ for frame in fn.frames():
 
 # validate
 fn_obj.validate_lemmapos_identifiers()
+
+if verbose:
+    print(fn_obj)
 
 # load graph
 g = graph_utils.load_graph(fn_obj.framelabel2frame_obj,
