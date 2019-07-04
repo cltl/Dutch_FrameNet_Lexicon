@@ -44,6 +44,7 @@ python combine_resources.py -h
     * [discuss how we want to approach this] integreer synoniem informatie (statistics about how much we would have to annotate)
 * load additional resources
     * PMB
+    * Predicate Matrix (relation synset to frame)
     
 ## Authors
 * **Marten Postma** (m.c.postma@vu.nl)
