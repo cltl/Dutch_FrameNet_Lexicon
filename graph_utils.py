@@ -198,20 +198,30 @@ def subgraph_in_dot(g, paths, output_path=None):
             synset_id = node_attr['attr']['synset_id']
             if synset_id is not None:
                 edge_attr = g.get_edge_data(node, synset_id)
-                edges[(node, synset_id)] = edge_attr['attr'] # edge added
+                if edge_attr is None:
+                    print('no edge attr between', node, synset_id)
+                    edges[(node, synset_id)] = dict()
+                else:
+                    edges[(node, synset_id)] = edge_attr['attr'] # edge added
                 nodes[synset_id] = dict() # node added
 
-                synset_info = g.node[synset_id]
-                for synonym in synset_info['attr']['synonyms']:
-                    if synonym != node:
-                        edges[(synonym, synset_id)] = dict() # edge added
-                        nodes[synonym] = dict() # node added
+                if not g.has_node(synset_id):
+                    print(f'synset not found: {synset_id}')
+                else:
+                    synset_info = g.node[synset_id]
+                    for synonym in synset_info['attr']['synonyms']:
+                        if synonym != node:
+                            edges[(synonym, synset_id)] = dict() # edge added
+                            nodes[synonym] = dict() # node added
 
 
     # add nodes to graph
     for node in nodes:
-        hover_text = create_hover_text(g.node[node])
-        lemma_g.node(node, tooltip=hover_text)
+        if not g.has_node(node):
+            print(f'node {node} not in graph')
+        else:
+            hover_text = create_hover_text(g.node[node])
+            lemma_g.node(node, tooltip=hover_text)
 
     # add edges to graph
     for (source, target), attributes in edges.items():
