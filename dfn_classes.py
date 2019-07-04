@@ -1,4 +1,7 @@
 from collections import Counter
+import shutil
+import os
+from lxml import etree
 
 
 def fn_pos2wn_pos(fn_pos):
@@ -136,6 +139,94 @@ class FrameNet:
                     identifiers.append(lemma_obj.lemma_pos_id)
 
         assert len(set(identifiers)) == len(self.dutch_lemma_pos2id)
+
+
+    def convert_to_nltk_package(self, english_fn_folder, output_folder):
+        """
+        the original English FrameNet folder is copied to 'output_folder'
+        Then, for all frame files (xml files in frame folder),
+        we remove all English lexical units and insert Dutch ones
+
+
+        You can then load Dutch FrameNet using:
+
+        from nltk.corpus.reader.framenet import FramenetCorpusReader
+        fn_instance = FramenetCorpusReader(output_folder, ['frRelation.xml',
+                                                           'frameIndex.xml',
+                                                          'semTypes.xml'])
+
+        :param str english_fn_folder: folder where English FrameNet is stored.
+        Could be found at:
+        >>> import nltk
+        >>> import os
+        >>> os.path.join(nltk.data.path[0], 'corpora', 'framenet_v17')
+        :param str output_folder: where you would like to store Dutch FrameNet
+        """
+        namespaces = {'xmlns': 'http://framenet.icsi.berkeley.edu'}
+
+        if os.path.exists(output_folder):
+           shutil.rmtree(output_folder)
+        shutil.copytree(src=english_fn_folder, dst=output_folder)
+
+        for frame_label, frame_obj in self.framelabel2frame_obj.items():
+
+            xml_input_path = os.path.join(english_fn_folder,
+                                          'frame',
+                                          f'{frame_label}.xml')
+            assert os.path.exists(xml_input_path)
+            doc = etree.parse(xml_input_path)
+            root = doc.getroot()
+
+            for lu_el in doc.findall('xmlns:lexUnit', namespaces):
+                lu_el.getparent().remove(lu_el)
+
+            for lu_id, lu_obj in frame_obj.lu_id2lu_obj.items():
+                if lu_obj.rbn_senses:
+                    for rbn_sense in lu_obj.rbn_senses:
+                        rbn_obj = rbn_sense['rbn_obj']
+                        attr = {'status': rbn_sense['status'],
+                                'POS': lu_obj.pos,
+                                'name': f'{rbn_obj.lemma}.{rbn_obj.fn_pos}',
+                                'ID': lu_obj.id_[3:],
+                                'lemmaID': rbn_sense['lemmaID'],
+                                'cBy': rbn_sense['provenance'],
+                                'cDate': rbn_sense['cDate']
+                                }
+                        le_el = etree.Element('lexUnit', attrib=attr)
+
+                        def_el = etree.Element('definition')
+                        def_el.text = rbn_obj.definition
+                        le_el.append(def_el)
+
+                        sent_count_el = etree.Element('sentenceCount', attrib={
+                            'annotate': '0',
+                            'total': '0'
+                        })
+                        le_el.append(sent_count_el)
+
+                        lexeme_el = etree.Element('lexeme', attrib={
+                            'order': '1',
+                            'headword': "false",
+                            'breakBefore': "false",
+                            'POS': lu_obj.pos,
+                            'name': rbn_obj.lemma
+                        })
+                        le_el.append(lexeme_el)
+
+                        root.append(le_el)
+
+            output_path = os.path.join(output_folder,
+                                       'frame',
+                                       f'{frame_label}.xml')
+
+            with open(output_path, 'w') as outfile:
+
+                xml_string = etree.tostring(root,
+                                            pretty_print=True,
+                                            xml_declaration=True,
+                                            encoding='utf-8')
+
+                outfile.write(xml_string.decode('utf-8'))
 
 
 class EnFrame:
