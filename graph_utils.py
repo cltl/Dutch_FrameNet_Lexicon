@@ -5,7 +5,7 @@ from graphviz import Source
 import nltk
 
 
-def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options):
+def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options, verbose=0):
     """
 
     """
@@ -62,6 +62,8 @@ def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options):
                 edge_attr = {'color' : color, 'tooltip' : rbn_obj.provenance_label}
                 g.add_edge(synset_id, rbn_obj.short_rdf_uri, attr=edge_attr)
 
+    if verbose:
+        print(nx.info(g))
     return g
 
 

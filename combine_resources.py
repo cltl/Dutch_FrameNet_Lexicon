@@ -161,7 +161,8 @@ fn_obj.validate_lemmapos_identifiers()
 g = graph_utils.load_graph(fn_obj.framelabel2frame_obj,
                            synset_id2synset_obj,
                            rbn_objs,
-                           configuration['graph_options'])
+                           configuration['graph_options'],
+                           verbose=verbose)
 
 # save to file
 output_path = out_dir / 'combined.p'
