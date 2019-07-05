@@ -134,7 +134,6 @@ for frame_label, frame_obj in fn_obj.framelabel2frame_obj.items():
                                         }
 
                             for synonym in synonyms:
-                                lu_obj.rbn_objs.add(synonym)
                                 sense_id2lu_ids[sense_id].add(lu_id)
                                 lu_id2sense_ids[lu_id].add(sense_id)
                                 senseid_and_luid2provenance[(sense_id, lu_id)] = 'TRANSLATION:Wiktionary;METHOD:ODWN-synonym-of-monosemy-RBN-FN-WN'
@@ -147,10 +146,12 @@ for frame_label, frame_obj in fn_obj.framelabel2frame_obj.items():
     for lu_id, lu_obj in frame_obj.lu_id2lu_obj.items():
         for sense_id in lu_id2sense_ids[lu_id]:
             if len(sense_id2lu_ids[sense_id]) == 1:
-                g.add_edge(lu_id, sense_id)
+
+                le_obj = rbn_senseid2le_obj[sense_id]
+                g.add_edge(lu_id, le_obj.short_rdf_uri)
+                added += 1
 
                 provenance = senseid_and_luid2provenance[(sense_id, lu_id)]
-                le_obj = rbn_senseid2le_obj[sense_id]
 
                 key = (le_obj.lemma, le_obj.fn_pos)
                 assert key in fn_obj.dutch_lemma_pos2id, f'{key} has no Dutch lemma pos id'
@@ -166,7 +167,6 @@ for frame_label, frame_obj in fn_obj.framelabel2frame_obj.items():
                 lu_obj.rbn_senses.append(information)
                 if verbose >= 2:
                     print(lu_id, sense_id)
-                added += 1
 
 new_num_edges = len(g.edges())
 assert (old_num_edges + added) == new_num_edges

@@ -83,7 +83,7 @@ g = nx.read_gpickle(f"{arguments['--input_folder']}/graph.p")
 
 # load polysemy info
 lemma_pos2frame_objs = defaultdict(list)
-for frame_label, frame_obj in fn_obj.frame_label2frame_obj.items():
+for frame_label, frame_obj in fn_obj.framelabel2frame_obj.items():
     for lu_id, lu_obj in frame_obj.lu_id2lu_obj.items():
         lemma_pos2frame_objs[(lu_obj.lexeme,
                               lu_obj.pos)].append(frame_obj)
@@ -103,6 +103,7 @@ all_paths = graph_utils.get_paths_from_rbn_to_fn(g,
                                                  maximum_length_path=1,
                                                  verbose=verbose)
 print('ended querying for paths', datetime.now())
+print(f'number of paths found: {len(all_paths)}')
 
 maximum_path_length = 2
 statistics = defaultdict(set)
@@ -134,6 +135,8 @@ with open(output_path, 'wb') as outfile:
     pickle.dump(statistics, outfile)
 
 if verbose:
+    for cat, items in statistics.items():
+        print(cat, len(items))
     print(f'saved output to {output_path}')
     print(datetime.now())
 
