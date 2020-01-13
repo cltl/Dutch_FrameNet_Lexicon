@@ -4,13 +4,12 @@ rm -rf resources
 mkdir resources
 
 cd resources
-git clone https://github.com/dkmfbk/premon
+mkdir premon
 cd premon
-mvn clean package -DskipTests -Prelease
+wget https://knowledgestore.fbk.eu/files/premon/dataset/latest/premon-2018a-fn17-noinf.tql.gz
+gunzip premon-2018a-fn17-noinf.tql.gz
 cd ../..
-
-exit 1;
-
+python -c 'import rdf_utils;g = rdf_utils.load_nquads_file(path_to_nquad_file="resources/premon/premon-2018a-fn17-noinf.tql");rdf_utils.convert_nquads_to_nt(g, output_path="resources/premon/premon-2018a-fn17-noinf.nt")'
 
 cd resources
 git clone https://github.com/cltl/FrameNet_annotations_on_SoNaR
