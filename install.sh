@@ -4,6 +4,15 @@ rm -rf resources
 mkdir resources
 
 cd resources
+git clone https://github.com/dkmfbk/premon
+cd premon
+mvn clean package -DskipTests -Prelease
+cd ../..
+
+exit 1;
+
+
+cd resources
 git clone https://github.com/cltl/FrameNet_annotations_on_SoNaR
 cd FrameNet_annotations_on_SoNaR
 pip install -r requirements.txt
@@ -38,6 +47,12 @@ pip install -r requirements.txt
 python main.py --orbn_path="resources/orbn_n-v-a.xml" --odwn_path="resources/odwn_orbn_gwg-LMF_1.3.xml" --output_folder="output" --allowed_prefixes="r+c" --exclude_sub_NUMBER="True" --namespace="http://premon.fbk.eu/resource/" --short_namespace="pm"
 python convert_mapping_to_json.py --path_to_excel="mapping_to_fn/Mapping.xlsx" --json_output_path="mapping_to_fn/mapping.json"
 cd ..
+
+git clone https://github.com/cltl/DutchSemCor_Reader
+cd DutchSemCor_Reader
+python load_dutchsemcor.py --input_folder="resources/1.2.1.HUMAN_ANNOTATIONS/" --output_folder="output" --prefixes="r" --verbose="1"
+
+
 
 pip install nltk
 python -c 'import nltk;nltk.download("wordnet")'
