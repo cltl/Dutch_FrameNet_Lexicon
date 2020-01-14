@@ -13,7 +13,7 @@ def load_graph(frame_label2frame_obj, synset_id2synset_obj, rbn_objs, options, v
 
     for frame_label, frame_obj in frame_label2frame_obj.items():
 
-        frame_short_rdf_uri = frame_obj.get_short_rdf_uri()
+        frame_short_rdf_uri = frame_obj.rdf_prefix_uri
         assert frame_short_rdf_uri
         g.add_node(frame_short_rdf_uri, attr=frame_obj.get_hover_info())  # node is added
 

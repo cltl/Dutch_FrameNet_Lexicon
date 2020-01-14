@@ -33,6 +33,25 @@ def load_nt_graph(nt_path):
         g.parse(file=infile, format='nt')
 
     return g
+
+
+def get_rdf_label(graph, uri):
+    query = """SELECT ?o WHERE {
+        <%s> rdfs:label ?o
+    }"""
+    the_query = query % uri
+
+    results = graph.query(the_query)
+
+    labels = set()
+    for result in results:
+        label = str(result.asdict()['o'])
+        labels.add(label)
+
+    assert len(labels) == 1, f'expected one label for {uri}, got {labels}'
+
+    return labels.pop()
+
 if __name__ == '__main__':
     # should exist after running install.sh
     path = 'resources/premon/premon-2018a-fn17-noinf.tql'

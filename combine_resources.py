@@ -107,13 +107,15 @@ for frame in fn.frames():
     frame_label = frame.name
     frame_def = frame.definition
 
-    frame_obj = dfn_classes.Frame(frame_label=frame_label,
+    frame_obj = dfn_classes.Frame(fn_frame_obj=frame,
+                                  frame_label=frame_label,
                                   definition=frame_def,
                                   fn_version=configuration['fn_version'],
+                                  fn_url=frame.URL,
                                   rdf_prefix=configuration['rdf_prefix'],
                                   premon_nt=premon_nt)
 
-    #frame_obj.add_lu_objs(frame, frame_obj.get_short_rdf_uri())
+    frame_obj.add_lu_objs(frame, frame_obj.rdf_prefix_uri)
 
     if verbose >= 4:
         continue
@@ -133,7 +135,7 @@ for frame in fn.frames():
         translations = en2nl[lu_obj.lexeme]
         for translation in translations:
             lemma_obj = dfn_classes.Lemma(lemma=translation,
-                                          frame_label=frame_obj.get_short_rdf_uri(),
+                                          frame_label=frame_obj.rdf_prefix_uri,
                                           provenance='wiktionary',
                                           language='Dutch',
                                           pos=lu_obj.pos,

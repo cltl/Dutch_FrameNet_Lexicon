@@ -4,6 +4,24 @@ import os
 from lxml import etree
 
 
+def get_rdf_label(graph, uri):
+    query = """SELECT ?o WHERE {
+        <%s> rdfs:label ?o
+    }"""
+    the_query = query % uri
+
+    results = graph.query(the_query)
+
+    labels = set()
+    for result in results:
+        label = str(result.asdict()['o'])
+        labels.add(label)
+
+    assert len(labels) == 1, f'expected one label for {uri}, got {labels}'
+
+    return labels.pop()
+
+
 def fn_pos2wn_pos(fn_pos):
     """
     FrameNet part of speech to WordNet part of speech
@@ -239,18 +257,24 @@ class Frame:
 
     """
     def __init__(self,
+                 fn_frame_obj,
                  frame_label,
                  definition,
                  fn_version,
                  rdf_prefix,
+                 fn_url,
                  premon_nt):
         self.frame_label = frame_label
         self.definition = definition
         self.fn_version = fn_version
+        self.fn_url = fn_url
         self.rdf_uri = self.get_rdf_uri(premon_nt, frame_label)
         self.rdf_prefix_uri = self.get_rdf_prefix_colon_item(rdf_prefix)
+        # TODO: FrameElement relations
 
-        print(self.rdf_uri, self.rdf_prefix_uri)
+        self.frame_elements = self.get_frame_elements(premon_nt=premon_nt,
+                                                      fn_frame_obj=fn_frame_obj,
+                                                      rdf_prefix=rdf_prefix)
 
         self.lemma_objs = []
         self.lexeme_objs = []
@@ -262,6 +286,41 @@ class Frame:
             'definition': self.definition,
             'rbn_feature_set_values': self.rbn_feature_set_values
         }
+
+    def get_fe_uris_and_labels(self, premon_nt, frame_uri):
+
+        # get roles
+        roles_of_frames = """SELECT ?o WHERE {
+            <%s> <http://premon.fbk.eu/ontology/core#semRole> ?o
+        }"""
+        the_query = roles_of_frames % frame_uri
+
+        results = premon_nt.query(the_query)
+
+        label_to_fe_uri = dict()
+        for result in results:
+            fe_uri = str(result.asdict()['o'])
+
+            label = get_rdf_label(premon_nt, fe_uri)
+            label_to_fe_uri[label] = fe_uri
+
+        return label_to_fe_uri
+
+    def get_frame_elements(self, premon_nt, fn_frame_obj, rdf_prefix):
+        fe_objs = []
+
+        label_to_fe_uri = self.get_fe_uris_and_labels(premon_nt=premon_nt,
+                                                      frame_uri=self.rdf_uri)
+
+        for fe_label, fe in fn_frame_obj.FE.items():
+
+            fe_rdf_uri = label_to_fe_uri[fe_label]
+            fe_obj = FrameElement(fn_fe_obj=fe,
+                                  rdf_prefix=rdf_prefix,
+                                  rdf_uri=fe_rdf_uri)
+            fe_objs.append(fe_obj)
+
+        return fe_objs
 
     def get_rdf_uri(self, premon_nt, frame_label):
         frame_query = """SELECT ?s WHERE {
@@ -319,10 +378,32 @@ class Frame:
 
         return '\n'.join(info)
 
-class Role:
+class FrameElement:
     """
 
     """
+    def __init__(self,
+                 fn_fe_obj,
+                 rdf_prefix,
+                 rdf_uri):
+        self.fn_fe_id = fn_fe_obj.ID   # the integer used by FrameNet as an identifier for the FrameElement
+        self.fe_label = fn_fe_obj.name # the FrameElement label
+        self.fe_type = fn_fe_obj.coreType # coretype: Core | Core-Unexpressed | Extra-Thematic | Peripheral
+        self.fe_definition = fn_fe_obj.definition
+        self.rdf_uri = rdf_uri
+        self.rdf_prefix_uri = self.get_rdf_prefix_colon_item(rdf_prefix)
+
+    def get_rdf_prefix_colon_item(self, rdf_prefix):
+        item = self.rdf_uri.split('/')[-1]
+        return f'{rdf_prefix}:{item}'
+
+    def __str__(self):
+        info = ['Frame Element:',
+                f'FN ID: {self.fn_fe_id}',
+                f'Label: {self.fe_label}',
+                f'Type: {self.fe_type}',
+                f'Definition: {self.fe_definition}']
+        return '\n'.join(info)
 
 class LU:
     """
@@ -333,6 +414,7 @@ class LU:
         self.lexeme = self.get_lexeme(lu_info)
         self.frame_short_rdf_uri = frame_short_rdf_uri
         self.rbn_senses = []
+
 
 
     def get_hover_info(self):
