@@ -29,7 +29,7 @@ def convert_nquads_to_nt(g, output_path):
 
 def load_nt_graph(nt_path):
     g = Graph()
-    with open(nt_pathg, 'rb') as infile:
+    with open(nt_path, 'rb') as infile:
         g.parse(file=infile, format='nt')
 
     return g

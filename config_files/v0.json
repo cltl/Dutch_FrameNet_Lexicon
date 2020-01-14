@@ -1,10 +1,11 @@
 {
   "fn_version" : "1.7",
-  "namespace" : "http://premon.fbk.eu/resource/",
   "rbn_filter" : "True",
   "exclude_lemmas_with_space" : "True",
   "cache_folder" : "tmp",
-  "short_namespace" : "pm",
+  "rdf_namespace" : "http://premon.fbk.eu/resource/",
+  "rdf_prefix" : "pm",
+  "path_premon_nt" : "resources/premon/premon-2018a-fn17-noinf.nt",
   "path_sonar_annotator_1" : "resources/FrameNet_annotations_on_SoNaR/scripts/bins/A1.p",
   "path_sonar_annotator_2" : "resources/FrameNet_annotations_on_SoNaR/scripts/bins/A2.p",
   "wiktionary_translations_path" : "resources/wiktionary/output/translations.tsv",
@@ -18,5 +19,6 @@
     "synset2rbn" : true,
     "rbn_les2feature_set2frame" : false
 },
-  "dot_legend_path" : "config_files/dot_legend.txt"
+  "dot_legend_path" : "config_files/dot_legend.txt",
+  "dutchsemcor_output": "resources/DutchSemCor_Reader/output/dutchsemcor.json"
 }

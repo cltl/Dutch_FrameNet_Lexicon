@@ -174,7 +174,8 @@ class FrameNet:
                                           'frame',
                                           f'{frame_label}.xml')
             assert os.path.exists(xml_input_path)
-            doc = etree.parse(xml_input_path)
+            parser = etree.XMLParser(remove_blank_text=True)
+            doc = etree.parse(xml_input_path, parser)
             root = doc.getroot()
 
             for lu_el in doc.findall('xmlns:lexUnit', namespaces):
@@ -195,7 +196,11 @@ class FrameNet:
                         le_el = etree.Element('lexUnit', attrib=attr)
 
                         def_el = etree.Element('definition')
-                        def_el.text = rbn_obj.definition
+                        if rbn_obj.definition is None:
+                            definition = 'NO DEFINITION'
+                        else:
+                            definition = rbn_obj.definition
+                        def_el.text = definition
                         le_el.append(def_el)
 
                         sent_count_el = etree.Element('sentenceCount', attrib={
@@ -229,21 +234,23 @@ class FrameNet:
                 outfile.write(xml_string.decode('utf-8'))
 
 
-class EnFrame:
+class Frame:
     """
 
     """
     def __init__(self,
                  frame_label,
                  definition,
-                 namespace,
                  fn_version,
-                 short_namespace):
+                 rdf_prefix,
+                 premon_nt):
         self.frame_label = frame_label
         self.definition = definition
-        self.namespace = namespace
         self.fn_version = fn_version
-        self.short_namespace = short_namespace
+        self.rdf_uri = self.get_rdf_uri(premon_nt, frame_label)
+        self.rdf_prefix_uri = self.get_rdf_prefix_colon_item(rdf_prefix)
+
+        print(self.rdf_uri, self.rdf_prefix_uri)
 
         self.lemma_objs = []
         self.lexeme_objs = []
@@ -256,11 +263,25 @@ class EnFrame:
             'rbn_feature_set_values': self.rbn_feature_set_values
         }
 
-    def get_full_rdf_uri(self):
-        return f'{self.namespace}fn{self.fn_version}-{self.frame_label.lower()}'
+    def get_rdf_uri(self, premon_nt, frame_label):
+        frame_query = """SELECT ?s WHERE {
+            ?s rdf:type <http://premon.fbk.eu/ontology/fn#Frame> .
+            ?s rdfs:label "%s" .
+        }"""
+        the_query = frame_query % frame_label
+        results = [result
+                   for result in premon_nt.query(the_query)]
 
-    def get_short_rdf_uri(self):
-        return f'({self.short_namespace})fn{self.fn_version}-{self.frame_label.lower()}'
+        assert len(results) == 1, f'query should only have one result: {the_query}\n{results}'
+
+        for result in results:
+            frame_rdf_uri = str(result.asdict()['s'])
+
+        return frame_rdf_uri
+
+    def get_rdf_prefix_colon_item(self, rdf_prefix):
+        item = self.rdf_uri.split('/')[-1]
+        return f'{rdf_prefix}:{item}'
 
     def add_lu_objs(self, frame, frame_short_rdf_uri):
         self.lu_id2lu_obj = dict()
@@ -269,7 +290,7 @@ class EnFrame:
             self.lu_id2lu_obj[lu_obj.id_] = lu_obj
 
     def __str__(self):
-        info = [f'Frame: {self.frame_label}\n']
+        info = [f'Frame: {self.frame_label} ({self.rdf_uri})\n']
         info.append('LEXEMES (provenance FrameNet annotations on SoNaR):')
         info.append(','.join([lexeme_obj.lexeme
                     for lexeme_obj in self.lexeme_objs]))
@@ -298,11 +319,14 @@ class EnFrame:
 
         return '\n'.join(info)
 
+class Role:
+    """
+
+    """
 
 class LU:
     """
     """
-
     def __init__(self, lu_info, frame_short_rdf_uri):
         self.id_ = f'LU-{lu_info.ID}'
         self.pos = lu_info.POS

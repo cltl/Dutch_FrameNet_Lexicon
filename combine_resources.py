@@ -28,6 +28,7 @@ from sonar_utils import load_sonar_annotations
 from wiktionary_utils import load_wiktionary
 from resources.FN_Reader.stats_utils import load_framenet
 import rbn_utils
+import rdf_utils
 from resources.ODWN_Reader import odwn_classes
 # make sure pickled objects can be read into memory
 sys.modules['odwn_classes'] = odwn_classes
@@ -64,6 +65,9 @@ if verbose >= 1:
 
 # load framenet
 fn = load_framenet(version=configuration['fn_version'])
+
+# load premon nt file
+premon_nt = rdf_utils.load_nt_graph(nt_path=configuration['path_premon_nt'])
 
 # load sonar annotations
 frame2lexeme_objs_from_sonar, \
@@ -103,12 +107,16 @@ for frame in fn.frames():
     frame_label = frame.name
     frame_def = frame.definition
 
-    frame_obj = dfn_classes.EnFrame(frame_label=frame_label,
-                                    definition=frame_def,
-                                    namespace=configuration['namespace'],
-                                    fn_version=configuration['fn_version'],
-                                    short_namespace=configuration['short_namespace'])
-    frame_obj.add_lu_objs(frame, frame_obj.get_short_rdf_uri())
+    frame_obj = dfn_classes.Frame(frame_label=frame_label,
+                                  definition=frame_def,
+                                  fn_version=configuration['fn_version'],
+                                  rdf_prefix=configuration['rdf_prefix'],
+                                  premon_nt=premon_nt)
+
+    #frame_obj.add_lu_objs(frame, frame_obj.get_short_rdf_uri())
+
+    if verbose >= 4:
+        continue
 
     # add lexeme information from sonar annotations
     if frame_label in frame2lexeme_objs_from_sonar:
