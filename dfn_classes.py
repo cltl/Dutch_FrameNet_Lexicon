@@ -1,6 +1,7 @@
 from collections import Counter
 import shutil
 import os
+import json
 from lxml import etree
 
 
@@ -157,6 +158,81 @@ class FrameNet:
                     identifiers.append(lemma_obj.lemma_pos_id)
 
         assert len(set(identifiers)) == len(self.dutch_lemma_pos2id)
+
+
+    def get_frame_to_info(self, verbose=0):
+        """
+        create frame PreMOn URI -> frame information, which will be used
+        in the Frame Annotation Tool (https://github.com/cltl/frame-annotation-tool)
+        """
+        frame_rdf_uri_to_info = {}
+
+        for frame_label, frame_obj in self.framelabel2frame_obj.items():
+
+            frame_rdf_uri = frame_obj.rdf_uri
+
+            fes = []
+            for fe_obj in frame_obj.frame_elements:
+
+                fe_info = {
+                    'definition' : fe_obj.fe_definition,
+                    'rdf_uri' : fe_obj.rdf_uri,
+                    'fe_label' : fe_obj.fe_label,
+                    'fe_type' : fe_obj.fe_type
+                }
+                fes.append(fe_info)
+
+            info = {
+                'definition' : frame_obj.definition,
+                'frame_label' : frame_obj.frame_label,
+                'framenet_url' : frame_obj.fn_url,
+                'frame_elements' : fes
+            }
+
+            frame_rdf_uri_to_info[frame_rdf_uri] = info
+
+        if verbose:
+            print()
+            print(f'found {len(frame_rdf_uri_to_info)} using method FrameNet.get_frame_to_info')
+
+        return frame_rdf_uri_to_info
+
+
+    def create_lexicon_data_annotation_tool(self, path_readme, output_folder, verbose=0):
+        """
+        create a folder with FrameNet information to be used in the annotation tool
+
+        :param str path_readme: path to read of the documents that it will contain, e.g.,
+        documentation/lexicon_data_for_frame_annotation_tool/README.md
+        :param str output_folder: where the folder should be stored, e.g., "lexicon_data_annotation_tool"
+        """
+        # recreate folder if needed
+        if os.path.exists(output_folder):
+            shutil.rmtree(output_folder)
+        os.mkdir(output_folder)
+
+        # write readme
+        with open(path_readme) as infile:
+            readme = infile.read()
+
+        output_path_readme = os.path.join(output_folder, 'README.md')
+        with open(output_path_readme, 'w') as outfile:
+            outfile.write(readme)
+
+        if verbose:
+            print(f'written README to {output_path_readme}')
+
+        # write frame_to_info
+        frame_to_info = self.get_frame_to_info()
+        output_path_frame_to_info = os.path.join(output_folder, 'frame_to_info.json')
+        with open(output_path_frame_to_info, 'w') as outfile:
+            json.dump(frame_to_info,
+                      outfile,
+                      indent=4,
+                      sort_keys=True)
+
+        if verbose:
+            print(f'written frame_to_info to {output_path_frame_to_info}')
 
 
     def convert_to_nltk_package(self, english_fn_folder, output_folder):
@@ -501,3 +577,14 @@ class Lexeme:
                 f'provenance: {self.provenance}']
 
         return ' '.join(info)
+
+
+
+
+if __name__ == '__main__':
+    import pickle
+    fn_obj = pickle.load(open('output/combined.p', 'rb'))
+
+    fn_obj.create_lexicon_data_annotation_tool(path_readme='documentation/lexicon_data_for_frame_annotation_tool/README.md',
+                                               output_folder='lexicon_data_for_frame_annotation_tool',
+                                               verbose=2)
