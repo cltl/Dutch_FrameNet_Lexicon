@@ -198,12 +198,19 @@ class FrameNet:
         return frame_rdf_uri_to_info
 
 
-    def create_lexicon_data_annotation_tool(self, path_readme, output_folder, verbose=0):
+    def create_lexicon_data_annotation_tool(self,
+                                            path_readme,
+                                            path_ud_information,
+                                            path_mapping_ud_pos_to_fn_pos,
+                                            output_folder,
+                                            verbose=0):
         """
         create a folder with FrameNet information to be used in the annotation tool
 
         :param str path_readme: path to read of the documents that it will contain, e.g.,
         documentation/lexicon_data_for_frame_annotation_tool/README.md
+        :param str path_ud_information: JSON file mapping UD pos tag to more information about the label
+        :param str path_mapping_ud_pos_to_fn_pos: JSON file mapping UD pos tag to FN pos tag
         :param str output_folder: where the folder should be stored, e.g., "lexicon_data_annotation_tool"
         """
         # recreate folder if needed
@@ -212,15 +219,25 @@ class FrameNet:
         os.mkdir(output_folder)
 
         # write readme
-        with open(path_readme) as infile:
-            readme = infile.read()
-
         output_path_readme = os.path.join(output_folder, 'README.md')
-        with open(output_path_readme, 'w') as outfile:
-            outfile.write(readme)
+        shutil.copy(path_readme, output_path_readme)
 
         if verbose:
             print(f'written README to {output_path_readme}')
+
+        # write UD information
+        output_path_ud_information = os.path.join(output_folder, 'part_of_speech_ud_info.json')
+        shutil.copy(path_ud_information, output_path_ud_information)
+
+        if verbose:
+            print(f'written UD information to {output_path_ud_information}')
+
+        # write mapping UD pos to FN pos
+        output_path_mapping_ud_fn = os.path.join(output_folder, 'ud_pos_to_fn_pos.json')
+        shutil.copy(path_mapping_ud_pos_to_fn_pos, output_path_mapping_ud_fn)
+
+        if verbose:
+            print(f'written mapping UD to FN to {output_path_mapping_ud_fn}')
 
         # write frame_to_info
         frame_to_info = self.get_frame_to_info()
@@ -492,7 +509,6 @@ class LU:
         self.rbn_senses = []
 
 
-
     def get_hover_info(self):
         return {
             'pos' : self.pos,
@@ -586,5 +602,8 @@ if __name__ == '__main__':
     fn_obj = pickle.load(open('output/combined.p', 'rb'))
 
     fn_obj.create_lexicon_data_annotation_tool(path_readme='documentation/lexicon_data_for_frame_annotation_tool/README.md',
+                                               path_ud_information='documentation/lexicon_data_for_frame_annotation_tool/part_of_speech_ud_info.json',
+                                               path_mapping_ud_pos_to_fn_pos='documentation/lexicon_data_for_frame_annotation_tool/ud_pos_to_fn_pos.json',
                                                output_folder='lexicon_data_for_frame_annotation_tool',
                                                verbose=2)
+
