@@ -11,7 +11,7 @@ Options:
     --use_cache=<use_cache>
 
 Example:
-    python combine_resources.py --config_path="../config_files/v0.json" --output_folder="../output/dfn_objects" --use_cache="True" --verbose=1
+    python combine_resources.py --config_path="../input/config_files/v0.json" --output_folder="../output/dfn_objects" --use_cache="True" --verbose=1
 """
 import json
 import os
@@ -80,10 +80,10 @@ frame2lexeme_objs_from_sonar, \
 frame2lemma_objs_from_sonar, \
 sonar_stats = load_sonar_annotations(configuration, verbose=verbose)
 
-if all([use_cache,
+if any([not use_cache,
         not cache_path_translations.exists()]):
     if verbose >= 1:
-        print('extracting wikitionary translations from file (no cache used')
+        print('extracting wikitionary translations from file (no cache used)')
     nl2en, en2nl = load_wiktionary(configuration, verbose=verbose)
     with open(str(cache_path_translations), 'wb') as outfile:
         pickle.dump((nl2en, en2nl), outfile)
