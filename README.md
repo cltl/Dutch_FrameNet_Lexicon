@@ -27,9 +27,23 @@ bash install.sh
 
 ### Represent linguistic resources using lib/dfn_classes.FrameNet class
 ```
-cd lib 
-python combine_resources.py -h
+cd bash_scripts
+bash represent_using_FrameNet_class.sh
 ```
+
+In the folder **output/output/dfn_objects** you will find:
+* combined.p (pickled lib/dfn_classes.FrameNet object)
+* graph.p (pickled networkx.classes.graph.Graph object)
+* representation.out (std out of representing data using lib/dfn_classes.FrameNet)
+* representation.err (std err of representing data using lib/dfn_classes.FrameNet)
+
+### Lexicon data for tool
+```
+cd bash_scripts
+bash lexicon_data_for_tool.sh
+```
+the folder with the lexicon data for the [annotation tool](https://github.com/cltl/frame-annotation-tool)
+is found at **output/lexicon_data_for_frame_annotation_tool**.
 
 ## Future work
 * incorporate [DutchSemCor](https://github.com/cltl/DutchSemCor_Reader) 
