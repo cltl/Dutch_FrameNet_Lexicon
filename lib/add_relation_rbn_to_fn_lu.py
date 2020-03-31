@@ -25,10 +25,14 @@ from nltk.corpus import wordnet as wn
 from datetime import datetime
 
 from dfn_classes import fn_pos2wn_pos
-from resources.ODWN_Reader import odwn_classes
-# make sure pickled objects can be read into memory
-sys.modules['odwn_classes'] = odwn_classes
-from resources.ODWN_Reader import utils
+
+import load_utils
+odwn_classes = load_utils.load_python_module(module_path='../resources/ODWN_Reader',
+                                             module_name='odwn_classes',
+                                             verbose=1)
+utils = load_utils.load_python_module(module_path='../resources/ODWN_Reader',
+                                      module_name='utils',
+                                      verbose=1)
 
 # load arguments
 arguments = docopt(__doc__)

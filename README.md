@@ -4,7 +4,7 @@ The goal of this repository is to exploit Dutch resources to create a Dutch Fram
 
 ### Prerequisites
 
-Python 3.7 was used to create this project. It might work with older versions of Python.
+Python 3.6 was used to create this project. It might work with older versions of Python.
 
 ### Installing
 
@@ -25,26 +25,14 @@ bash install.sh
 
 ## Contents
 
-Most important classes files :
-* dfn_classes.py
-* resources/ODWN_Reader/odwn_classes.py
-
-## How to use
-Perform the following call for more information about usage
+### Represent linguistic resources using lib/dfn_classes.FrameNet class
 ```
+cd lib 
 python combine_resources.py -h
 ```
 
-## TODO
-* add legend
-* mapping
-    * domein informatie
-    * using framenet relations
-* load richer graph 
-    * [discuss how we want to approach this] integreer synoniem informatie (statistics about how much we would have to annotate)
-* load additional resources
-    * PMB
-    * Predicate Matrix (relation synset to frame)
+## Future work
+* incorporate [DutchSemCor](https://github.com/cltl/DutchSemCor_Reader) 
     
 ## Authors
 * **Marten Postma** (m.c.postma@vu.nl)

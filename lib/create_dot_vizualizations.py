@@ -13,16 +13,17 @@ Options:
 Example:
     python create_dot_vizualizations.py --graph_path="output/graph_v1.p" --rbn_path="resources/ODWN_Reader/output/orbn.p" --output_folder="dot" --verbose="1"
 """
-import sys
 import pickle
 from pathlib import Path
 import graph_utils
-from resources.ODWN_Reader import odwn_classes
-# make sure pickled objects can be read into memory
-sys.modules['odwn_classes'] = odwn_classes
 import networkx as nx
 from docopt import docopt
 from datetime import datetime
+
+import load_utils
+odwn_classes = load_utils.load_python_module(module_path='../resources/ODWN_Reader',
+                                           module_name='odwn_classes',
+                                           verbose=1)
 
 # load arguments
 arguments = docopt(__doc__)

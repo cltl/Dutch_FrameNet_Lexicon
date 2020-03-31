@@ -2,7 +2,7 @@
   "fn_version" : "1.7",
   "rbn_filter" : "True",
   "exclude_lemmas_with_space" : "True",
-  "cache_folder" : "tmp",
+  "cache_folder" : "output/cache",
   "rdf_namespace" : "http://premon.fbk.eu/resource/",
   "rdf_prefix" : "pm",
   "path_premon_nt" : "resources/premon/premon-2018a-fn17-noinf.nt",
@@ -20,5 +20,4 @@
     "rbn_les2feature_set2frame" : false
 },
   "dot_legend_path" : "config_files/dot_legend.txt",
-  "dutchsemcor_output": "resources/DutchSemCor_Reader/output/dutchsemcor.json"
 }

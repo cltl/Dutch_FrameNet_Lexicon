@@ -27,10 +27,13 @@ from datetime import datetime
 import networkx as nx
 import graph_utils
 
-from resources.ODWN_Reader import odwn_classes
-# make sure pickled objects can be read into memory
-sys.modules['odwn_classes'] = odwn_classes
-from resources.ODWN_Reader import utils
+import load_utils
+odwn_classes = load_utils.load_python_module(module_path='../resources/ODWN_Reader',
+                                             module_name='odwn_classes',
+                                             verbose=1)
+utils = load_utils.load_python_module(module_path='../resources/ODWN_Reader',
+                                      module_name='utils',
+                                      verbose=1)
 
 
 def polysemy_profiles_to_category(polysemy_nl, polysemy_en):

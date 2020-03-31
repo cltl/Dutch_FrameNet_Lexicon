@@ -31,10 +31,10 @@ def load_combined_resources_as_df(fnlabel2fn_obj):
         for lu_id, lu_obj in frame_obj.lu_id2lu_obj.items():
             
             num_of_lu_senses = 0
-            if hasattr(lu_obj, 'rbn2fn'):
-                num_of_lu_senses += len(lu_obj.rbn2fn)
-                if lu_obj.rbn2fn:
-                    for sense_id in lu_obj.rbn2fn:
+            if hasattr(lu_obj, 'rbn_senses'):
+                num_of_lu_senses += len(lu_obj.rbn_senses)
+                if lu_obj.rbn_senses:
+                    for sense_id in lu_obj.rbn_senses:
                         number_of_rbn_senses += 1
             
             lu2number_of_dutch_senses[lu_id] = num_of_lu_senses

@@ -3,10 +3,11 @@ import os
 import pickle
 from dfn_classes import Lexeme, Lemma
 from collections import defaultdict
-from resources.FrameNet_annotations_on_SoNaR.scripts import sonar_classes
-# make sure pickled objects can read into memory
-sys.modules['sonar_classes'] = sonar_classes
 
+import load_utils
+sonar_classes = load_utils.load_python_module(module_path='../resources/FrameNet_annotations_on_SoNaR/scripts',
+                                              module_name='sonar_classes',
+                                              verbose=1)
 
 def load_sonar_annotations(configuration, verbose=0):
     """

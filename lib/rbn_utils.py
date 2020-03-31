@@ -1,5 +1,9 @@
 from collections import defaultdict
-from resources.FN_Reader import stats_utils
+import load_utils
+
+stats_utils = load_utils.load_python_module(module_path='../resources/FN_Reader',
+                                            module_name='stats_utils',
+                                            verbose=1)
 
 def load_frame2rbn_objs_via_subsumes_relation(fn, mapping, rbn_objs, verbose=0):
     """

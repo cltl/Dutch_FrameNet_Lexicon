@@ -11,11 +11,10 @@ Options:
     --use_cache=<use_cache>
 
 Example:
-    python combine_resources.py --config_path="config_files/v0.json" --output_folder="output" --use_cache="True" --verbose=1
+    python combine_resources.py --config_path="../config_files/v0.json" --output_folder="../output/dfn_objects" --use_cache="True" --verbose=1
 """
 import json
 import os
-import sys
 import pickle
 import pathlib
 from docopt import docopt
@@ -26,12 +25,19 @@ import graph_utils
 
 from sonar_utils import load_sonar_annotations
 from wiktionary_utils import load_wiktionary
-from resources.FN_Reader.stats_utils import load_framenet
 import rbn_utils
 import rdf_utils
-from resources.ODWN_Reader import odwn_classes
-# make sure pickled objects can be read into memory
-sys.modules['odwn_classes'] = odwn_classes
+import load_utils
+
+odwn_classes = load_utils.load_python_module(module_path='../resources/ODWN_Reader',
+                                           module_name='odwn_classes',
+                                           verbose=1)
+
+stats_utils = load_utils.load_python_module(module_path='../resources/FN_Reader',
+                                            module_name='stats_utils',
+                                            verbose=1)
+from stats_utils import load_framenet
+
 
 import networkx as nx
 
@@ -73,7 +79,6 @@ premon_nt = rdf_utils.load_nt_graph(nt_path=configuration['path_premon_nt'])
 frame2lexeme_objs_from_sonar, \
 frame2lemma_objs_from_sonar, \
 sonar_stats = load_sonar_annotations(configuration, verbose=verbose)
-
 
 if all([use_cache,
         not cache_path_translations.exists()]):
@@ -184,7 +189,6 @@ with open(output_path, 'wb') as outfile:
 
 graph_path = out_dir / 'graph.p'
 nx.write_gpickle(g, graph_path)
-
 
 if verbose:
     print(f'saved output to {output_path}')
