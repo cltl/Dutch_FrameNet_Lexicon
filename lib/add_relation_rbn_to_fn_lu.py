@@ -12,7 +12,7 @@ Options:
     --verbose=<verbose> 0 --> no stdout 1 --> general stdout 2 --> detailed stdout
 
 Example:
-    python add_relation_rbn_to_fn_lu.py --config_path="config_files/v0.json" --input_folder="output" --use_wn_polysemy="True" --pos="noun-verb-adjective" --verbose=1
+    python add_relation_rbn_to_fn_lu.py --config_path="../input/config_files/v0.json" --input_folder="../output/dfn_objects" --use_wn_polysemy="True" --pos="noun-verb-adjective" --verbose=1
 """
 import json
 import os
@@ -72,9 +72,11 @@ for path in [frame_objs_path, graph_path]:
 
 fn_obj = pickle.load(open(frame_objs_path, 'rb'))
 
+polysemy_folder = os.path.join(arguments['--input_folder'], 'polysemy_profiles')
+
 lemma_and_pos_en2lemma_pos_nl = defaultdict(set)
 for pos in fn_pos:
-    polysemy_profiles = pickle.load(open(f'polysemy_profiles/{pos}.p', 'rb'))
+    polysemy_profiles = pickle.load(open(f'{polysemy_folder}/{pos}.p', 'rb'))
     for (lemma_nl, pos_nl), (lemma_en, pos_en) in polysemy_profiles['m2m']:
         lemma_and_pos_en2lemma_pos_nl[(lemma_en, pos_en)].add((lemma_nl, pos_nl))
 
@@ -128,19 +130,19 @@ for frame_label, frame_obj in fn_obj.framelabel2frame_obj.items():
                         lu_id2sense_ids[lu_id].add(sense_id)
                         senseid_and_luid2provenance[(sense_id, lu_id)] = 'TRANSLATION:Wiktionary;METHOD:monosemy-RBN-FN-WN'
 
-                        rbn_obj = rbn_senseid2le_obj[sense_id]
-                        if rbn_obj.synset_id:
-                            synset_obj = synset_id2synset_obj[rbn_obj.synset_id]
-                            synonyms = {le_obj.sense_id
-                                        for le_obj in synset_obj.synonyms
-                                        if all(['cdb2.2_Manual' in le_obj.provenance_set,
-                                                le_obj.sense_id != sense_id])
-                                        }
+                        #rbn_obj = rbn_senseid2le_obj[sense_id]
+                        #if rbn_obj.synset_id:
+                        #    synset_obj = synset_id2synset_obj[rbn_obj.synset_id]
+                        #    synonyms = {le_obj.sense_id
+                        #                for le_obj in synset_obj.synonyms
+                        #                if all(['cdb2.2_Manual' in le_obj.provenance_set,
+                        #                        le_obj.sense_id != sense_id])
+                        #                }
 
-                            for synonym in synonyms:
-                                sense_id2lu_ids[sense_id].add(lu_id)
-                                lu_id2sense_ids[lu_id].add(sense_id)
-                                senseid_and_luid2provenance[(sense_id, lu_id)] = 'TRANSLATION:Wiktionary;METHOD:ODWN-synonym-of-monosemy-RBN-FN-WN'
+                        #    for synonym in synonyms:
+                        #        sense_id2lu_ids[sense_id].add(lu_id)
+                        #        lu_id2sense_ids[lu_id].add(sense_id)
+                        #        senseid_and_luid2provenance[(sense_id, lu_id)] = 'TRANSLATION:Wiktionary;METHOD:ODWN-synonym-of-monosemy-RBN-FN-WN'
 
 # update graph
 g = nx.read_gpickle(graph_path)
