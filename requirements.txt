@@ -1,9 +1,9 @@
 networkx==2.2
 pandas==0.24.2
 graphviz==0.13.2
-nltk==3.4
+nltk==3.4.5
 docopt==0.6.2
 KafNafParserPy==1.896
 rdfextras==0.4
 rdflib==4.2.2
-nltk==3.4
+nltk==3.4.5
