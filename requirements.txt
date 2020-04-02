@@ -6,3 +6,4 @@ docopt==0.6.2
 KafNafParserPy==1.896
 rdfextras==0.4
 rdflib==4.2.2
+nltk==3.4
