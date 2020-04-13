@@ -37,6 +37,12 @@ In the folder **output/output/dfn_objects** you will find:
 * representation.out (std out of representing data using lib/dfn_classes.FrameNet)
 * representation.err (std err of representing data using lib/dfn_classes.FrameNet)
 
+### Iteration 1
+TODO 
+
+### Annotation
+TODO 
+
 ### Lexicon data for tool
 ```
 cd bash_scripts

@@ -156,7 +156,12 @@ def get_paths_from_rbn_to_fn(g,
     return all_paths
 
 
-def subgraph_in_dot(g, paths, output_path=None):
+def subgraph_in_dot(g,
+                    paths,
+                    add_synset_edges=False,
+                    add_rbn_feature_set=False,
+                    output_path=None,
+                    verbose=0):
     """
     load the paths as graphviz object such that we can easily vizualize it
 
@@ -179,6 +184,11 @@ def subgraph_in_dot(g, paths, output_path=None):
             nodes[target] = dict()
             edges[(source, target)] = dict()
 
+    if verbose >= 2:
+        print()
+        print(f'# of nodes: {len(nodes)}')
+        print(f'# of edges: {len(edges)}')
+
     # add nodes to graph
     for node in list(nodes): # nodes is a list here because else the dictionary would change size during the for loop
         # add edge to frame
@@ -186,8 +196,9 @@ def subgraph_in_dot(g, paths, output_path=None):
             frame_attr = g.node[node]
 
             # add edge to RBN feature set
-            for rbn_feature_set in frame_attr['attr']['rbn_feature_set_values']:
-                edges[(node, rbn_feature_set)] = dict() # edge added
+            if add_rbn_feature_set:
+                for rbn_feature_set in frame_attr['attr']['rbn_feature_set_values']:
+                    edges[(node, rbn_feature_set)] = dict() # edge added
 
         if node.startswith('(pm)RBN-'):
             node_attr = g.node[node]
@@ -196,24 +207,25 @@ def subgraph_in_dot(g, paths, output_path=None):
                     feature_set_value]):
                 edges[(node, feature_set_value)] = dict() # edge added
 
-            synset_id = node_attr['attr']['synset_id']
-            if synset_id is not None:
-                edge_attr = g.get_edge_data(node, synset_id)
-                if edge_attr is None:
-                    print('no edge attr between', node, synset_id)
-                    edges[(node, synset_id)] = dict()
-                else:
-                    edges[(node, synset_id)] = edge_attr['attr'] # edge added
-                nodes[synset_id] = dict() # node added
+            if add_synset_edges:
+                synset_id = node_attr['attr']['synset_id']
+                if synset_id is not None:
+                    edge_attr = g.get_edge_data(node, synset_id)
+                    if edge_attr is None:
+                        print('no edge attr between', node, synset_id)
+                        edges[(node, synset_id)] = dict()
+                    else:
+                        edges[(node, synset_id)] = edge_attr['attr'] # edge added
+                    nodes[synset_id] = dict() # node added
 
-                if not g.has_node(synset_id):
-                    print(f'synset not found: {synset_id}')
-                else:
-                    synset_info = g.node[synset_id]
-                    for synonym in synset_info['attr']['synonyms']:
-                        if synonym != node:
-                            edges[(synonym, synset_id)] = dict() # edge added
-                            nodes[synonym] = dict() # node added
+                    if not g.has_node(synset_id):
+                        print(f'synset not found: {synset_id}')
+                    else:
+                        synset_info = g.node[synset_id]
+                        for synonym in synset_info['attr']['synonyms']:
+                            if synonym != node:
+                                edges[(synonym, synset_id)] = dict() # edge added
+                                nodes[synonym] = dict() # node added
 
 
     # add nodes to graph
