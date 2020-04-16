@@ -362,7 +362,7 @@ class Frame:
         self.fn_version = fn_version
         self.fn_url = fn_url
         self.rdf_uri = self.get_rdf_uri(premon_nt, frame_label)
-        self.rdf_prefix_uri = self.get_rdf_prefix_colon_item(rdf_prefix)
+        self.short_rdf_uri = self.get_short_rdf_uri(rdf_prefix)
         # TODO: FrameElement relations
 
         self.frame_elements = self.get_frame_elements(premon_nt=premon_nt,
@@ -431,9 +431,9 @@ class Frame:
 
         return frame_rdf_uri
 
-    def get_rdf_prefix_colon_item(self, rdf_prefix):
+    def get_short_rdf_uri(self, rdf_prefix):
         item = self.rdf_uri.split('/')[-1]
-        return f'{rdf_prefix}:{item}'
+        return f'(rdf_prefix){item}'
 
     def add_lu_objs(self, frame, frame_short_rdf_uri):
         self.lu_id2lu_obj = dict()
@@ -484,11 +484,11 @@ class FrameElement:
         self.fe_type = fn_fe_obj.coreType # coretype: Core | Core-Unexpressed | Extra-Thematic | Peripheral
         self.fe_definition = fn_fe_obj.definition
         self.rdf_uri = rdf_uri
-        self.rdf_prefix_uri = self.get_rdf_prefix_colon_item(rdf_prefix)
+        self.rdf_prefix_uri = self.get_short_rdf_uri(rdf_prefix)
 
-    def get_rdf_prefix_colon_item(self, rdf_prefix):
+    def get_short_rdf_uri(self, rdf_prefix):
         item = self.rdf_uri.split('/')[-1]
-        return f'{rdf_prefix}:{item}'
+        return f'({rdf_prefix}){item}'
 
     def __str__(self):
         info = ['Frame Element:',
@@ -505,6 +505,7 @@ class LU:
         self.id_ = f'LU-{lu_info.ID}'
         self.pos = lu_info.POS
         self.lexeme = self.get_lexeme(lu_info)
+        self.definition = lu_info.definition
         self.frame_short_rdf_uri = frame_short_rdf_uri
         self.rbn_senses = []
 
@@ -513,6 +514,7 @@ class LU:
         return {
             'pos' : self.pos,
             'lemma' : self.lexeme,
+            'definition' : self.definition,
             'frame_short_rdf_uri' : self.frame_short_rdf_uri
         }
 

@@ -120,7 +120,7 @@ for frame in fn.frames():
                                   rdf_prefix=configuration['rdf_prefix'],
                                   premon_nt=premon_nt)
 
-    frame_obj.add_lu_objs(frame, frame_obj.rdf_prefix_uri)
+    frame_obj.add_lu_objs(frame, frame_obj.short_rdf_uri)
 
     if verbose >= 4:
         continue
@@ -140,7 +140,7 @@ for frame in fn.frames():
         translations = en2nl[lu_obj.lexeme]
         for translation in translations:
             lemma_obj = dfn_classes.Lemma(lemma=translation,
-                                          frame_label=frame_obj.rdf_prefix_uri,
+                                          frame_label=frame_obj.short_rdf_uri,
                                           provenance='wiktionary',
                                           language='Dutch',
                                           pos=lu_obj.pos,
