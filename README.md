@@ -38,10 +38,12 @@ In the folder **output/output/dfn_objects** you will find:
 * representation.err (std err of representing data using lib/dfn_classes.FrameNet)
 
 ### Iteration 1
-TODO 
 
-### Annotation
-TODO 
+```bash
+bash v1.sh
+bash v1_analyses_annotation.sh
+bash v1_input_annotation_tool.sh
+```
 
 ### Lexicon data for tool
 ```

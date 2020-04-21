@@ -202,10 +202,12 @@ def subgraph_in_dot(g,
 
         if node.startswith('(pm)RBN-'):
             node_attr = g.node[node]
-            feature_set_value = node_attr['attr']['rbn_feature_set']
-            if all([feature_set_value is not None,
-                    feature_set_value]):
-                edges[(node, feature_set_value)] = dict() # edge added
+
+            if add_rbn_feature_set:
+                feature_set_value = node_attr['attr']['rbn_feature_set']
+                if all([feature_set_value is not None,
+                        feature_set_value]):
+                    edges[(node, feature_set_value)] = dict() # edge added
 
             if add_synset_edges:
                 synset_id = node_attr['attr']['synset_id']

@@ -128,10 +128,3 @@ def create_annotation_folder(output_folder,
         print(f'stored svgs in {images_folder}')
         print(f'stored annotation input in {annotations_folder}')
         print(f'added {len(index_to_edge)} images to output folder.')
-
-if __name__ == '__main__':
-    create_annotation_folder(output_folder='../output/iteration1/tool_input',
-                             graph_path='../output/dfn_objects/graph_v1.p',
-                             path_rbn_to_lu='../development/rbn_senseid2fn_lu_ids.p',
-                             overwrite=True,
-                             verbose=1)
