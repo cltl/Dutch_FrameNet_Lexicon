@@ -128,7 +128,7 @@ for frame_label, frame_obj in fn_obj.framelabel2frame_obj.items():
 
                         sense_id2lu_ids[sense_id].add(lu_id)
                         lu_id2sense_ids[lu_id].add(sense_id)
-                        senseid_and_luid2provenance[(sense_id, lu_id)] = 'TRANSLATION:Wiktionary;METHOD:monosemy-RBN-FN-WN'
+                        senseid_and_luid2provenance[(sense_id, lu_id)] = 'Iteration-1'
 
                         #rbn_obj = rbn_senseid2le_obj[sense_id]
                         #if rbn_obj.synset_id:
