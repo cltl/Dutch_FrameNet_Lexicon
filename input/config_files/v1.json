@@ -1,0 +1,7 @@
+{
+  "fn_object_path" : "../output/dfn_objects/combined_v1.p",
+  "iteration_output_path" : "../output/analyses/iteration_1",
+  "evaluation_set_path" : "../output/annotation/iteration_1/manual_evaluation_set.p",
+  "evaluation_set_proportion" : 0.1,
+  "create_evaluation_set": false
+}
