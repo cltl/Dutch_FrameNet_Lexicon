@@ -12,7 +12,7 @@ def load_python_module(module_path, module_name, verbose=0):
     :rtype: module
     :return: a Python module
     """
-    sys.path.append(module_path)
+    sys.path.insert(0, module_path)
     imported_module = importlib.import_module(module_name)
     sys.path.remove(module_path)
     assert module_path not in sys.path

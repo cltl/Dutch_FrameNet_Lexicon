@@ -2,8 +2,8 @@
 
 This directory contains three files:
 * **frame_to_info.json**
-* **lu_to_frames.json**
-* **lu_and_pos_to_frames**
+* **part_of_speech_ud_info.json**
+* **ud_pos_to_fn_pos.json**
 
 ## **frame_to_info.json**
 
@@ -36,25 +36,8 @@ A frame [PreMOn](https://premon.fbk.eu/) URI is mapped to its definition, and Fr
     },
 ```
 
-## **lu_to_frames.json**
+## **part_of_speech_ud_info.json**
+Information about each UD part of speech tag.
 
-In this current version, a **lemma** is mapped to its candidate frame IDs according to FrameNet 1.7 as part of [PreMOn](https://premon.fbk.eu/), e.g.,
-
-```json
-"sail": [
-    "http://premon.fbk.eu/resource/fn17-self_motion",
-    "http://premon.fbk.eu/resource/fn17-ride_vehicle",
-    "http://premon.fbk.eu/resource/fn17-operate_vehicle"
-],
-"sailor": [
-    "http://premon.fbk.eu/resource/fn17-member_of_military"
-],
-```
-
-* **lu_and_pos_to_frames**
-
-## Considerations
-* do we use the part of speech in the look-up and if so NAF or Universal Dependencies?
-* what kind of identifiers do we use for FrameNet lexical units, roles, and frames? Framester or other one.
-* how do we vizualize the information to the annotators? Which information do we show?
-* how do deal with multiword expressions? How do we represent them?
+## **ud_pos_to_fn_pos.json**
+Mapping from UD part of speech tags to FrameNet part of speech tags.
