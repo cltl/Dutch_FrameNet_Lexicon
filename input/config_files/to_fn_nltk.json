@@ -1,0 +1,16 @@
+{
+  "paths" : {
+    "orbn_path" : "../resources/ODWN_Reader/output/orbn.p",
+    "fn_obj_path" : "../output/dfn_objects/iteration_2/combined_v2_annotated.p"
+  },
+  "fn_nltk" : {
+    "annotation_provenances" : ["manual", "automatic"],
+    "provenance_labels" : ["Iteration-2_WN-ODWN", "Iteration-2_WN", "Iteration-2_ODWN", "Iteration-1"],
+    "annotation_categories" : {
+      "exact_match-keep" : "equivalence",
+      "close_match-new_lu_to_frame" : "near_equivalence",
+      "no_match-new_lu_to_frame" : null
+    },
+    "lus_json" : "../output/fn_nltk/iterations_1_2.json"
+  }
+}
